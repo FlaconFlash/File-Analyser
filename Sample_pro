@@ -1,0 +1,93 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+
+public class TextFileAnalyzer {
+    public static void main(String[] args) {
+        // Replace "sample.txt" with the path to the text file you want to analyze
+        String filePath = "sample.txt";
+        
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            StringBuilder text = new StringBuilder();
+            String line;
+            
+            // Read the text file line by line
+            while ((line = reader.readLine()) != null) {
+                text.append(line).append("\n");
+            }
+            
+            // Close the reader
+            reader.close();
+            
+            // Analyze the text
+            analyzeText(text.toString());
+        } catch (IOException e) {
+            System.err.println("Error reading the file: " + e.getMessage());
+        }
+    }
+    
+    public static void analyzeText(String text) {
+        // Word count
+        int wordCount = countWords(text);
+        System.out.println("Word Count: " + wordCount);
+        
+        // Character count
+        int charCount = countCharacters(text);
+        System.out.println("Character Count: " + charCount);
+        
+        // Frequency analysis
+        Map<String, Integer> wordFrequency = getWordFrequency(text);
+        System.out.println("Word Frequency: " + wordFrequency);
+        
+        // Search for a specific word or phrase
+        String searchTerm = "Java"; // Replace with your search term
+        boolean found = search(text, searchTerm);
+        if (found) {
+            System.out.println("'" + searchTerm + "' found in the text.");
+        } else {
+            System.out.println("'" + searchTerm + "' not found in the text.");
+        }
+        
+        // Generate a summary (example: top 10 words)
+        List<Map.Entry<String, Integer>> sortedWords = sortByValue(wordFrequency);
+        System.out.println("Top 10 Most Common Words:");
+        for (int i = 0; i < Math.min(10, sortedWords.size()); i++) {
+            System.out.println(sortedWords.get(i).getKey() + ": " + sortedWords.get(i).getValue());
+        }
+    }
+    
+    public static int countWords(String text) {
+        String[] words = text.split("\\s+");
+        return words.length;
+    }
+    
+    public static int countCharacters(String text) {
+        return text.length();
+    }
+    
+    public static Map<String, Integer> getWordFrequency(String text) {
+        Map<String, Integer> wordFrequency = new HashMap<>();
+        String[] words = text.split("\\s+");
+        
+        for (String word : words) {
+            word = word.toLowerCase().replaceAll("[^a-zA-Z]", ""); // Remove punctuation and convert to lowercase
+            if (!word.isEmpty()) {
+                wordFrequency.put(word, wordFrequency.getOrDefault(word, 0) + 1);
+            }
+        }
+        
+        return wordFrequency;
+    }
+    
+    public static boolean search(String text, String searchTerm) {
+        return text.toLowerCase().contains(searchTerm.toLowerCase());
+    }
+    
+    public static List<Map.Entry<String, Integer>> sortByValue(Map<String, Integer> map) {
+        List<Map.Entry<String, Integer>> list = new ArrayList<>(map.entrySet());
+        list.sort((e1, e2) -> e2.getValue().compareTo(e1.getValue())); // Descending order
+        return list;
+    }
+}
